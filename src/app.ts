@@ -1,9 +1,8 @@
 import 'dotenv/config';
-import express, { NextFunction, Request, Response } from 'express';
+import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
-import { z } from 'zod';
 import { config } from './config.js';
 import { phonePeConfigured } from './payment.js';
 import { emailConfigured } from './email.js';
@@ -13,8 +12,12 @@ import cartRoutes from './routes/cartRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
 import wishlistRoutes from './routes/wishlistRoutes.js';
+import { requestLogger } from './middleware/requestLogger.js';
+import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
 
 const app = express();
+
+app.use(requestLogger);
 app.use(helmet());
 app.use(cors({ origin: config.frontendUrl }));
 app.use(express.json({ limit: '1mb' }));
@@ -29,17 +32,7 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/wishlist', wishlistRoutes);
 
-app.use((error: unknown, _req: Request, res: Response, _next: NextFunction) => {
-  if (error instanceof z.ZodError) return res.status(400).json({ message: 'Invalid request', errors: error.issues });
-  if (error && typeof error === 'object' && 'code' in error && error.code === 11000) {
-    return res.status(409).json({ message: 'An account with this email already exists. Please sign in instead.' });
-  }
-  if (error && typeof error === 'object' && 'name' in error && error.name === 'ValidationError') {
-    return res.status(400).json({ message: 'Invalid account details.' });
-  }
-  const message = error instanceof Error ? error.message : 'Internal server error';
-  const status = message.includes('not found') || message.includes('unavailable') ? 400 : 500;
-  res.status(status).json({ message });
-});
+app.use(notFoundHandler);
+app.use(errorHandler);
 
 export default app;
