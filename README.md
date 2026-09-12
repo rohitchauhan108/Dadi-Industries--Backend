@@ -18,6 +18,13 @@ npm run seed
 npm run dev
 ```
 
+For production, build the TypeScript source to JavaScript and start the emitted server:
+
+```bash
+npm run build
+npm start
+```
+
 The API runs at `http://localhost:4000`.
 
 ## Auth

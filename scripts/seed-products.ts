@@ -16,7 +16,7 @@ await Product.insertMany(PRODUCTS.map(product => ({
   weight: product.weight,
   variants: product.variants,
   image: product.image,
-  inStock: product.variants.some(variant => variant.inStock)
+  inStock: product.variants.some((variant: { inStock?: boolean }) => variant.inStock)
 })));
 console.log(`Seeded ${PRODUCTS.length} products`);
 await mongoose.disconnect();

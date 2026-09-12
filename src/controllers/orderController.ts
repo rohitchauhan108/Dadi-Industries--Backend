@@ -23,8 +23,8 @@ const priceItems = async (items: z.infer<typeof itemSchema>[]) => {
   return items.map(item => {
     const product = byId.get(item.productId);
     if (!product) throw new Error(`Product not found: ${item.productId}`);
-    const variant = product.variants.find((entry: { weight?: string }) => entry.weight === item.weight);
-    if (!variant || variant.inStock === false) throw new Error(`${product.name} (${item.weight}) is unavailable`);
+    const variant = product.variants.find(entry => entry.weight === item.weight);
+    if (!variant || variant.inStock === false || variant.price == null) throw new Error(`${product.name} (${item.weight}) is unavailable`);
     return { productId: product.id, name: product.name, weight: item.weight, unitPrice: variant.price, quantity: item.quantity };
   });
 };
