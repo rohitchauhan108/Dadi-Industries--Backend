@@ -20,6 +20,9 @@ const app = express();
 
 const allowedOrigins = [
   config.frontendUrl,
+  'https://dadi-industries.com',
+  'https://www.dadi-industries.com',
+  'https://dadi-industries-sand.vercel.app',
   'http://localhost:3000',
   'http://localhost:3001',
   'http://127.0.0.1:3000',
