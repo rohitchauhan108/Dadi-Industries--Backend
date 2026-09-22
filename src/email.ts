@@ -144,3 +144,42 @@ export const sendPasswordResetEmail = async (to: string, name: string, code: str
     html
   });
 };
+
+export const CONTACT_INBOX = 'rankmantradeveloper@gmail.com';
+
+export type ContactFormPayload = {
+  name: string;
+  phone: string;
+  email?: string;
+  inquiryType?: string;
+  message: string;
+};
+
+export const sendContactFormEmail = async (payload: ContactFormPayload): Promise<void> => {
+  if (!resend) {
+    throw new Error('Contact form email is not configured. Add RESEND_API_KEY to the backend environment.');
+  }
+  const replyTo = payload.email?.trim()
+    ? `${payload.name} <${payload.email.trim()}>`
+    : undefined;
+
+  const subjectLine = `[${payload.inquiryType || 'Contact Form'}] New message from ${payload.name}`;
+  const html = wrap(
+    subjectLine,
+    `
+      <p><strong>Name:</strong> ${payload.name}</p>
+      <p><strong>Phone:</strong> ${payload.phone}</p>
+      ${payload.email ? `<p><strong>Email:</strong> ${payload.email}</p>` : ''}
+      <p><strong>Inquiry Type:</strong> ${payload.inquiryType || 'General'}</p>
+      <p style="margin-top:20px;padding:16px;background:#FAF7F0;border-radius:12px;border:1px solid #EAE1D0;white-space:pre-wrap;">${payload.message}</p>
+    `
+  );
+
+  await resend.emails.send({
+    from: config.resendFromEmail,
+    to: CONTACT_INBOX,
+    subject: subjectLine,
+    replyTo: replyTo,
+    html
+  });
+};

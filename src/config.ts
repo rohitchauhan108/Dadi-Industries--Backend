@@ -18,6 +18,6 @@ export const config = {
   jwtSecret: process.env.JWT_SECRET || (process.env.NODE_ENV === 'production' ? required('JWT_SECRET') : 'dev-only-insecure-secret-change-me'),
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '30d',
   resendApiKey: process.env.RESEND_API_KEY || '',
-  resendFromEmail: process.env.RESEND_FROM_EMAIL || 'Dadi Industries <onboarding@resend.dev>',
+  resendFromEmail: process.env.RESEND_FROM_EMAIL || 'Dadi Industries <accounts@dadi-industries.com>',
   nodeEnv: process.env.NODE_ENV || 'development'
 };
